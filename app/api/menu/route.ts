@@ -9,15 +9,6 @@ const categories: Record<CategoryName, Category> = categoriesArray.reduce((acc, 
   return acc;
 }, {} as Record<CategoryName, Category>);
 
-// GET - Fetch all menu items
-export async function GET() {
-  try {
-    const menuItems = await prisma.menuItem.findMany({
-      orderBy: [
-        { category: 'asc' },
-        { name: 'asc' },
-      ],
-    });
 
     // Convert category strings to Category objects
     type PrismaMenuItem = {
@@ -33,6 +24,18 @@ export async function GET() {
     type FormattedMenuItem = Omit<PrismaMenuItem, 'category'> & {
       category: Category;
     };
+
+// GET - Fetch all menu items
+export async function GET() {
+  try {
+    const menuItems = await prisma.menuItem.findMany({
+      orderBy: [
+        { category: 'asc' },
+        { name: 'asc' },
+      ],
+    });
+
+
 
     const formattedItems: FormattedMenuItem[] = menuItems
       .map((item: PrismaMenuItem) => {
@@ -50,7 +53,8 @@ export async function GET() {
       .filter((item: FormattedMenuItem | null): item is FormattedMenuItem => item !== null);
 
     return NextResponse.json(formattedItems, { status: 200 });
-  } catch (error) {
+  }
+   catch (error) {
     console.error('Error fetching menu items:', error);
     return NextResponse.json(
       { error: 'Failed to fetch menu items' },

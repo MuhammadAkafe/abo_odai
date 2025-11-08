@@ -1,7 +1,6 @@
 'use client';
 
 import { MenuItem, Category, CategoryName } from '../types';
-import { getCategoryName } from '../utils/translations';
 
 interface MenuSectionProps {
   category: Category;
@@ -42,7 +41,7 @@ export default function MenuSection({ category, items, onClick, isSelected = fal
           onClick={onClick || undefined}
           className={`text-4xl font-extrabold ${colors.text} tracking-tight ${onClick ? 'cursor-pointer hover:scale-105' : ''} transition-all duration-200 ${isSelected ? 'ring-4 ring-offset-4 rounded-xl px-4 py-2 shadow-lg' : ''}`}
         >
-          {getCategoryName(category)}
+          {category.nameInHebrew || category.name}
         </h2>
         <div className={`flex-1 h-1 ${colors.bgSimple} rounded-full`}></div>
       </div>
@@ -78,7 +77,7 @@ export default function MenuSection({ category, items, onClick, isSelected = fal
                       ₪{item.price.toFixed(2)}
                     </span>
                     <div className={`px-3 py-1 rounded-full text-xs font-semibold ${colors.bg} ${colors.text} border ${colors.border}`}>
-                      {getCategoryName(category)}
+                      {category.nameInHebrew || category.name}
                     </div>
                   </div>
                 </div>

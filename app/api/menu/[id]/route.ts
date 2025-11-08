@@ -10,10 +10,7 @@ const categories: Record<CategoryName, Category> = categoriesArray.reduce((acc, 
 }, {} as Record<CategoryName, Category>);
 
 // PUT - Update a menu item
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PUT(request: NextRequest,{ params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
     const { name, description, price, category } = await request.json();
@@ -72,7 +69,8 @@ export async function PUT(
       ...menuItem,
       category: categoryObj,
     }, { status: 200 });
-  } catch (error) {
+  } 
+  catch (error) {
     console.error('Error updating menu item:', error);
     if (error instanceof Error && error.message.includes('Record to update not found')) {
       return NextResponse.json(

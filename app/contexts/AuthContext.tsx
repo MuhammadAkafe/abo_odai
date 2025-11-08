@@ -10,7 +10,8 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export function AuthProvider({ children }: { children: ReactNode }) {
+export function AuthProvider({ children }: { children: ReactNode }) 
+{
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
     if (typeof window !== 'undefined') {
       const authStatus = sessionStorage.getItem('isAuthenticated');
@@ -18,6 +19,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
     return false;
   });
+
+  const deleteSessionStorage = () => {
+    if (typeof window !== 'undefined') {
+      sessionStorage.removeItem('isAuthenticated');
+      sessionStorage.removeItem('userEmail');
+    }
+  };
+
+  const setSessionStorage = (email: string) => {
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('isAuthenticated', 'true');
+      sessionStorage.setItem('userEmail', email);
+    }
+  };
 
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
@@ -33,12 +48,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (response.ok && data.success) {
         setIsAuthenticated(true);
-        if (typeof window !== 'undefined') {
-          sessionStorage.setItem('isAuthenticated', 'true');
-          sessionStorage.setItem('userEmail', email);
-        }
+        setSessionStorage(email);
         return true;
-      } else {
+      }
+       else {
         return false;
       }
     } catch (error) {
@@ -49,10 +62,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = () => {
     setIsAuthenticated(false);
-    if (typeof window !== 'undefined') {
-      sessionStorage.removeItem('isAuthenticated');
-      sessionStorage.removeItem('userEmail');
-    }
+    deleteSessionStorage();
   };
 
   return (

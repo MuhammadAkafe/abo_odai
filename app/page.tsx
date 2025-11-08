@@ -6,7 +6,6 @@ import MenuSection from './components/MenuSection';
 import { useRouter } from 'next/navigation';
 import { useAuth } from './contexts/AuthContext';
 import { Category, CategoryName } from './types';
-import { getCategoryName } from './utils/translations';
 import { categories } from './category';
 
 const categoryColors: Record<CategoryName, { bg: string; bgSimple: string; border: string; text: string; icon: string }> = {
@@ -51,7 +50,7 @@ function CategoryCard({ category, itemCount, onClick }: CategoryCardProps) {
       <div className="relative z-10">
         <div className="text-5xl mb-4">{colors.icon}</div>
         <h2 className={`text-3xl font-extrabold ${colors.text} mb-2`}>
-          {getCategoryName(category)}
+          {category.nameInHebrew || category.name}
         </h2>
         <p className="text-gray-600 dark:text-gray-400 text-sm">
           {itemCount} {itemCount === 1 ? 'פריט' : 'פריטים'} זמינים
@@ -117,7 +116,7 @@ export default function Home() {
             <div className="mb-8 flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <span className="text-gray-600 dark:text-gray-400">
-                  מציג: <span className="font-bold text-indigo-600 dark:text-indigo-400">{selectedCategory ? getCategoryName(selectedCategory) : ''}</span>
+                  מציג: <span className="font-bold text-indigo-600 dark:text-indigo-400">{selectedCategory ? (selectedCategory.nameInHebrew || selectedCategory.name) : ''}</span>
                 </span>
               </div>
               <button

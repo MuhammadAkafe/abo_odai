@@ -26,7 +26,8 @@ export function MenuProvider({ children }: { children: ReactNode }) {
       if (response.ok) {
         const data = await response.json();
         setMenuItems(data);
-      } else {
+      }
+       else {
         console.error('Failed to fetch menu items');
       }
     } catch (error) {
@@ -96,7 +97,8 @@ export function MenuProvider({ children }: { children: ReactNode }) {
 
       if (response.ok) {
         setMenuItems((prev) => prev.filter((i) => i.id !== id));
-      } else {
+      }
+       else {
         const error = await response.json();
         throw new Error(error.error || 'Failed to delete menu item');
       }

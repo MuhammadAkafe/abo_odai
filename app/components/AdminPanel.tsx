@@ -5,7 +5,6 @@ import { useAuth } from '../contexts/AuthContext';
 import { useMenu } from '../contexts/MenuContext';
 import { MenuItem, CategoryName } from '../types';
 import { useRouter } from 'next/navigation';
-import { getCategoryName } from '../utils/translations';
 import { categories } from '../category';
 import AddAndEdit from './AddAndEdit';
 
@@ -225,7 +224,7 @@ export default function AdminPanel() {
                             ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
                             : 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300'
                         }`}>
-                          {getCategoryName(item.category)}
+                          {item.category.nameInHebrew || item.category.name}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
