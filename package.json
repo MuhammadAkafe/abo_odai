@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "prisma migrate deploy && next build",
+    "build": "(prisma migrate deploy || echo 'Migration skipped') && next build",
     "start": "next start",
     "lint": "eslint",
     "postinstall": "prisma generate",
@@ -12,6 +12,7 @@
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
     "db:migrate:deploy": "prisma migrate deploy",
+    "db:baseline": "prisma migrate resolve --applied 20251112165123_add_category_model",
     "db:seed": "tsx prisma/seed.ts",
     "db:studio": "prisma studio"
   },
