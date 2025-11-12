@@ -3,15 +3,29 @@
 import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useMenu } from '../contexts/MenuContext';
+import { useCategory } from '../contexts/CategoryContext';
 import { useLanguage } from '../contexts/LanguageContext';
-import { MenuItem, CategoryName } from '../types';
+import { MenuItem } from '../types';
 import { useRouter } from 'next/navigation';
-import { categories } from '../category';
 import AddAndEdit from './AddAndEdit';
+import CategoryManagement from './CategoryManagement';
+
+const getCategoryBadgeColors = (categoryName: string) => {
+  const name = categoryName.toLowerCase();
+  if (name.includes('grill') || name.includes('جريل')) {
+    return 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300';
+  } else if (name.includes('salad') || name.includes('سلط')) {
+    return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300';
+  } else if (name.includes('drink') || name.includes('مشروب')) {
+    return 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300';
+  }
+  return 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-300';
+};
 
 export default function AdminPanel() {
   const { logout } = useAuth();
   const { menuItems, addItem, updateItem, deleteItem } = useMenu();
+  const { categories } = useCategory();
   const { language } = useLanguage();
   const router = useRouter();
   const [editingItem, setEditingItem] = useState<MenuItem | null>(null);
@@ -20,7 +34,7 @@ export default function AdminPanel() {
     name: '',
     description: '',
     price: '',
-    category: 'Grill' as CategoryName,
+    categoryId: '',
   });
 
   const handleLogout = () => {
@@ -31,12 +45,26 @@ export default function AdminPanel() {
   const handleAdd = () => {
     setShowAddForm(true);
     setEditingItem(null);
+    setShowAddForm(!showAddForm);
     setFormData({
       name: '',
       description: '',
       price: '',
-      category: 'Grill',
+      categoryId: categories.length > 0 ? categories[0].id : '',
     });
+  };
+
+  const handleCategoryChange = () => {
+    // Update form categoryId if it's empty or invalid
+    if (categories.length > 0) {
+      const currentCategoryExists = categories.some(cat => cat.id === formData.categoryId);
+      if (!currentCategoryExists) {
+        setFormData(prev => ({
+          ...prev,
+          categoryId: categories[0].id,
+        }));
+      }
+    }
   };
 
   const handleEdit = (item: MenuItem) => {
@@ -46,7 +74,7 @@ export default function AdminPanel() {
       name: item.name,
       description: item.description,
       price: item.price.toString(),
-      category: item.category.name,
+      categoryId: item.category.id,
     });
   };
 
@@ -78,7 +106,7 @@ export default function AdminPanel() {
     }
 
     try {
-      const selectedCategory = categories.find(cat => cat.name === formData.category);
+      const selectedCategory = categories.find(cat => cat.id === formData.categoryId);
       if (!selectedCategory) {
         const errorMessage = language === 'ar'
           ? 'يرجى اختيار فئة صحيحة'
@@ -107,7 +135,7 @@ export default function AdminPanel() {
         name: '',
         description: '',
         price: '',
-        category: 'Grill',
+        categoryId: categories.length > 0 ? categories[0].id : '',
       });
       setEditingItem(null);
       setShowAddForm(false);
@@ -124,7 +152,7 @@ export default function AdminPanel() {
       name: '',
       description: '',
       price: '',
-      category: 'Grill',
+      categoryId: categories.length > 0 ? categories[0].id : '',
     });
     setEditingItem(null);
     setShowAddForm(false);
@@ -164,6 +192,8 @@ export default function AdminPanel() {
             </button>
           </div>
         </div>
+
+        <CategoryManagement onCategoryChange={handleCategoryChange} />
 
         <AddAndEdit handleAdd={handleAdd} showAddForm={showAddForm} 
         editingItem={editingItem} formData={formData} setFormData={setFormData} handleSubmit={handleSubmit} cancelForm={cancelForm} />
@@ -234,13 +264,7 @@ export default function AdminPanel() {
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-3 py-1.5 text-xs font-bold rounded-full ${
-                          item.category.name === 'Grill' 
-                            ? 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300'
-                            : item.category.name === 'Salads'
-                            ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
-                            : 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300'
-                        }`}>
+                        <span className={`px-3 py-1.5 text-xs font-bold rounded-full ${getCategoryBadgeColors(item.category.name)}`}>
                           {language === 'ar' ? (item.category.nameInArabic || item.category.name) : item.category.name}
                         </span>
                       </td>

@@ -1,6 +1,6 @@
 'use client';
 
-import { MenuItem, Category, CategoryName } from '../types';
+import { MenuItem, Category } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
 
 interface MenuSectionProps {
@@ -10,29 +10,41 @@ interface MenuSectionProps {
   isSelected?: boolean;
 }
 
-const categoryColors: Record<CategoryName, { bg: string; bgSimple: string; border: string; text: string }> = {
-  Grill: {
-    bg: 'bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20',
-    bgSimple: 'bg-orange-200 dark:bg-orange-800',
-    border: 'border-orange-200 dark:border-orange-800',
-    text: 'text-orange-600 dark:text-orange-400',
-  },
-  Salads: {
-    bg: 'bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20',
-    bgSimple: 'bg-green-200 dark:bg-green-800',
-    border: 'border-green-200 dark:border-green-800',
-    text: 'text-green-600 dark:text-green-400',
-  },
-  Drinks: {
-    bg: 'bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20',
-    bgSimple: 'bg-blue-200 dark:bg-blue-800',
-    border: 'border-blue-200 dark:border-blue-800',
-    text: 'text-blue-600 dark:text-blue-400',
-  },
+const getCategoryColors = (categoryName: string) => {
+  const name = categoryName.toLowerCase();
+  if (name.includes('grill') || name.includes('جريل')) {
+    return {
+      bg: 'bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20',
+      bgSimple: 'bg-orange-200 dark:bg-orange-800',
+      border: 'border-orange-200 dark:border-orange-800',
+      text: 'text-orange-600 dark:text-orange-400',
+    };
+  } else if (name.includes('salad') || name.includes('سلط')) {
+    return {
+      bg: 'bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20',
+      bgSimple: 'bg-green-200 dark:bg-green-800',
+      border: 'border-green-200 dark:border-green-800',
+      text: 'text-green-600 dark:text-green-400',
+    };
+  } else if (name.includes('drink') || name.includes('مشروب')) {
+    return {
+      bg: 'bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20',
+      bgSimple: 'bg-blue-200 dark:bg-blue-800',
+      border: 'border-blue-200 dark:border-blue-800',
+      text: 'text-blue-600 dark:text-blue-400',
+    };
+  }
+  // Default colors
+  return {
+    bg: 'bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20',
+    bgSimple: 'bg-indigo-200 dark:bg-indigo-800',
+    border: 'border-indigo-200 dark:border-indigo-800',
+    text: 'text-indigo-600 dark:text-indigo-400',
+  };
 };
 
 export default function MenuSection({ category, items, onClick, isSelected = false }: MenuSectionProps) {
-  const colors = categoryColors[category.name];
+  const colors = getCategoryColors(category.name);
   const { language } = useLanguage();
 
   return (

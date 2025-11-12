@@ -1,8 +1,6 @@
-export type CategoryName = 'Grill' | 'Salads' | 'Drinks';
-
 export type Category = {
-  id: number;
-  name: CategoryName;
+  id: string;
+  name: string;
   nameInArabic?: string;
 };
 

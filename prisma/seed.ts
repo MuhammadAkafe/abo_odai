@@ -5,7 +5,12 @@ const prisma = new PrismaClient();
 
 async function main() {
   console.log('Seeding database...');
-   await prisma.user.deleteMany();
+  
+  // Clear existing data
+  await prisma.menuItem.deleteMany();
+  await prisma.category.deleteMany();
+  await prisma.user.deleteMany();
+  
   // Create admin user
   const hashedPassword = await bcrypt.hash('admin123', 10);
   const admin = await prisma.user.upsert({
@@ -16,6 +21,37 @@ async function main() {
       password: hashedPassword,
     },
   });
+
+  // Create default categories
+  const grill = await prisma.category.upsert({
+    where: { name: 'Grill' },
+    update: {},
+    create: {
+      name: 'Grill',
+      nameInArabic: 'جريل',
+    },
+  });
+
+  const salads = await prisma.category.upsert({
+    where: { name: 'Salads' },
+    update: {},
+    create: {
+      name: 'Salads',
+      nameInArabic: 'سلطات',
+    },
+  });
+
+  const drinks = await prisma.category.upsert({
+    where: { name: 'Drinks' },
+    update: {},
+    create: {
+      name: 'Drinks',
+      nameInArabic: 'مشروبات',
+    },
+  });
+
+  console.log('Seeded categories:', { grill, salads, drinks });
+  console.log('Seeded admin user:', admin.email);
 }
 
 

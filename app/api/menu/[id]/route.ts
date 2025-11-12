@@ -1,13 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../../../../lib/prisma';
-import { Category, CategoryName } from '../../../types';
-import { categories as categoriesArray } from '../../../category';
-
-// Convert categories array to Record for quick lookup
-const categories: Record<CategoryName, Category> = categoriesArray.reduce((acc, category) => {
-  acc[category.name] = category;
-  return acc;
-}, {} as Record<CategoryName, Category>);
+import { Category } from '../../../types';
 
 // PUT - Update a menu item
 export async function PUT(request: NextRequest,{ params }: { params: Promise<{ id: string }> }) {
@@ -22,14 +15,17 @@ export async function PUT(request: NextRequest,{ params }: { params: Promise<{ i
       );
     }
 
-    // Extract category name if it's a Category object, otherwise use it as is
-    const categoryName: string = typeof category === 'object' && category !== null && 'name' in category
-      ? category.name
+    // Extract category ID if it's a Category object, otherwise use it as is
+    const categoryId: string = typeof category === 'object' && category !== null && 'id' in category
+      ? category.id
       : category;
 
-    // Validate category
-    const validCategoryNames = categoriesArray.map(c => c.name);
-    if (!validCategoryNames.includes(categoryName as CategoryName)) {
+    // Validate category exists
+    const categoryExists = await prisma.category.findUnique({
+      where: { id: categoryId },
+    });
+
+    if (!categoryExists) {
       return NextResponse.json(
         { error: 'Invalid category' },
         { status: 400 }
@@ -51,26 +47,27 @@ export async function PUT(request: NextRequest,{ params }: { params: Promise<{ i
         name: String(name).trim(),
         description: String(description).trim(),
         price: parsedPrice,
-        category: categoryName as CategoryName,
+        categoryId: categoryId,
+      },
+      include: {
+        category: true,
       },
     });
 
-    // Get the category object - we know it exists because we validated it
-    const categoryObj = categories[categoryName as CategoryName];
-    if (!categoryObj) {
-      // This should never happen due to validation, but handle it safely
-      return NextResponse.json(
-        { error: 'Category lookup failed' },
-        { status: 500 }
-      );
-    }
-
     return NextResponse.json({
-      ...menuItem,
-      category: categoryObj,
+      id: menuItem.id,
+      name: menuItem.name,
+      description: menuItem.description,
+      price: menuItem.price,
+      category: {
+        id: menuItem.category.id,
+        name: menuItem.category.name,
+        nameInArabic: menuItem.category.nameInArabic,
+      } as Category,
+      createdAt: menuItem.createdAt,
+      updatedAt: menuItem.updatedAt,
     }, { status: 200 });
-  } 
-  catch (error) {
+  } catch (error) {
     console.error('Error updating menu item:', error);
     if (error instanceof Error && error.message.includes('Record to update not found')) {
       return NextResponse.json(

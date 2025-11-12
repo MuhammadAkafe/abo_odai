@@ -6,31 +6,17 @@ import MenuSection from './components/MenuSection';
 import { useRouter } from 'next/navigation';
 import { useAuth } from './contexts/AuthContext';
 import { useLanguage } from './contexts/LanguageContext';
-import { Category, CategoryName } from './types';
-import { categories } from './category';
+import { Category } from './types';
+import { useCategory } from './contexts/CategoryContext';
 
-const categoryColors: Record<CategoryName, { bg: string; bgSimple: string; border: string; text: string; icon: string }> = {
-  Grill: {
-    bg: 'bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20',
-    bgSimple: 'bg-orange-200 dark:bg-orange-800',
-    border: 'border-orange-200 dark:border-orange-800',
-    text: 'text-orange-600 dark:text-orange-400',
-    icon: '🔥',
-  },
-  Salads: {
-    bg: 'bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20',
-    bgSimple: 'bg-green-200 dark:bg-green-800',
-    border: 'border-green-200 dark:border-green-800',
-    text: 'text-green-600 dark:text-green-400',
-    icon: '🥗',
-  },
-  Drinks: {
-    bg: 'bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20',
-    bgSimple: 'bg-blue-200 dark:bg-blue-800',
-    border: 'border-blue-200 dark:border-blue-800',
-    text: 'text-blue-600 dark:text-blue-400',
-    icon: '🥤',
-  },
+const getCategoryColors = () => {
+  // Default colors
+  return {
+    bg: 'bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20',
+    bgSimple: 'bg-indigo-200 dark:bg-indigo-800',
+    border: 'border-indigo-200 dark:border-indigo-800',
+    text: 'text-indigo-600 dark:text-indigo-400',
+  };
 };
 
 interface CategoryCardProps {
@@ -40,7 +26,7 @@ interface CategoryCardProps {
 }
 
 function CategoryCard({ category, itemCount, onClick }: CategoryCardProps) {
-  const colors = categoryColors[category.name as CategoryName];
+  const colors = getCategoryColors();
   const { language } = useLanguage();
 
   return (
@@ -50,7 +36,6 @@ function CategoryCard({ category, itemCount, onClick }: CategoryCardProps) {
     >
       <div className={`absolute top-0 right-0 w-32 h-32 ${colors.bgSimple} rounded-full -mr-16 -mt-16 opacity-20`}></div>
       <div className="relative z-10">
-        <div className="text-5xl mb-4">{colors.icon}</div>
         <h2 className={`text-3xl font-extrabold ${colors.text} mb-2`}>
           {language === 'ar' ? category.nameInArabic : category.name}
         </h2>
@@ -70,6 +55,7 @@ function CategoryCard({ category, itemCount, onClick }: CategoryCardProps) {
 
 export default function Home() {
   const { getItemsByCategory } = useMenu();
+  const { categories } = useCategory();
   const { isAuthenticated } = useAuth();
   const { language, toggleLanguage } = useLanguage();
   const router = useRouter();
