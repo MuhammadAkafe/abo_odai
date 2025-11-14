@@ -65,6 +65,7 @@ export function MenuProvider({ children }: { children: ReactNode }) {
     }
   };
 
+
   const updateItem = async (id: string, item: Partial<MenuItem>) => {
     try {
       const response = await fetch(`/api/menu/${id}`, {
@@ -89,6 +90,8 @@ export function MenuProvider({ children }: { children: ReactNode }) {
       throw error;
     }
   };
+
+  
 
   const deleteItem = async (id: string) => {
     try {
